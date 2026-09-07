@@ -1,0 +1,14 @@
+<section class="card">
+  <h2>📢 Announcements</h2>
+  {% if announcements %}
+    {% for a in announcements %}
+    <div class="announcement">
+      <div class="announcement-title">{{ a.title }}</div>
+      <div class="announcement-meta">{{ a.author.full_name }} &middot; {{ a.created_at.strftime('%b %d, %Y %H:%M') }}</div>
+      <p>{{ a.body }}</p>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No announcements yet.</p>
+  {% endif %}
+</section>

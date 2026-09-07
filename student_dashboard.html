@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Users</h2>
+    <table>
+      <thead><tr><th>Name</th><th>Username</th><th>Role</th><th></th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.full_name }}</td>
+          <td>{{ u.username }}</td>
+          <td><span class="badge badge-{{ u.role }}">{{ u.role }}</span></td>
+          <td>
+            {% if u.id != current_user.id %}
+            <form method="POST" action="{{ url_for('delete_user', user_id=u.id) }}"
+                  onsubmit="return confirm('Delete {{ u.full_name }}?');">
+              <button type="submit" class="btn-small danger">Delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Create a course</h2>
+    <form method="POST" action="{{ url_for('new_course') }}">
+      <label>Course name</label>
+      <input type="text" name="name" required>
+
+      <label>Course code</label>
+      <input type="text" name="code" placeholder="e.g. MATH101" required>
+
+      <label>Assign teacher (optional)</label>
+      <select name="teacher_id">
+        <option value="">-- none yet --</option>
+        {% for u in users if u.role == 'teacher' %}
+          <option value="{{ u.id }}">{{ u.full_name }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="btn">Create course</button>
+    </form>
+
+    <h2>Enroll a student</h2>
+    <form method="POST" action="{{ url_for('enroll_student') }}">
+      <label>Student</label>
+      <select name="student_id" required>
+        {% for u in users if u.role == 'student' %}
+          <option value="{{ u.id }}">{{ u.full_name }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Course</label>
+      <select name="course_id" required>
+        {% for c in courses %}
+          <option value="{{ c.id }}">{{ c.name }} ({{ c.code }})</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="btn">Enroll</button>
+    </form>
+  </div>
+</section>
+
+<section class="card">
+  <h2>All Courses</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Code</th><th>Teacher</th><th>Students enrolled</th></tr></thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td>{{ c.name }}</td>
+        <td>{{ c.code }}</td>
+        <td>{{ c.teacher.full_name if c.teacher else '—' }}</td>
+        <td>{{ c.enrollments|length }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card">
+  <h2>Post an announcement</h2>
+  <form method="POST" action="{{ url_for('new_announcement') }}">
+    <label>Title</label>
+    <input type="text" name="title" required>
+    <label>Message</label>
+    <textarea name="body" rows="3" required></textarea>
+    <button type="submit" class="btn">Post</button>
+  </form>
+</section>
+
+{% include '_announcements.html' %}
+{% endblock %}

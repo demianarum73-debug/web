@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<h1>Student Dashboard</h1>
+
+<section class="card">
+  <h2>My Courses & Grades</h2>
+  {% if enrollments %}
+  <table>
+    <thead><tr><th>Course</th><th>Code</th><th>Teacher</th><th>Grade</th><th>Comment</th></tr></thead>
+    <tbody>
+      {% for e in enrollments %}
+      <tr>
+        <td>{{ e.course.name }}</td>
+        <td>{{ e.course.code }}</td>
+        <td>{{ e.course.teacher.full_name if e.course.teacher else '—' }}</td>
+        <td><strong>{{ e.grade or 'Not graded yet' }}</strong></td>
+        <td>{{ e.comment or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">You're not enrolled in any courses yet. Ask an admin to enroll you.</p>
+  {% endif %}
+</section>
+
+{% include '_announcements.html' %}
+{% endblock %}
